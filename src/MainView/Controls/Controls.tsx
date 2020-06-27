@@ -4,16 +4,18 @@ export interface IControlsProps {
     playbackRate: number;
     reverbWet: number;
     reverbDecay: number;
+    reverbPreDelay: number;
     onPlayBackRateChange: (value: number) => void;
     onReverbWetChange: (value: number) => void;
     onReverbDecayChange: (value: number) => void;
+    onReverbPreDelayChange: (value: number) => void;
     disabled: boolean;
 }
 
 export const Controls: React.FC<IControlsProps> =
     ({ 
-        onPlayBackRateChange, onReverbWetChange, onReverbDecayChange, 
-        playbackRate, reverbWet, reverbDecay,
+        onPlayBackRateChange, onReverbWetChange, onReverbDecayChange, onReverbPreDelayChange,
+        playbackRate, reverbWet, reverbDecay, reverbPreDelay,
         disabled 
     }) => {
         return (
@@ -50,15 +52,28 @@ export const Controls: React.FC<IControlsProps> =
                 <div style={{ display: 'flex' }}>
                     <pre>Decay</pre>&nbsp;
                      <input
-                        disabled={disabled}
+                        // disabled={disabled}
                         type="range"
-                        min="0.1"
+                        min="0.5"
                         max="10"
                         step="0.5"
                         value={reverbDecay}
-                        onChange={(e) => { console.log(e.type); onReverbDecayChange(Number(e.target.value))}}
+                        onChange={(e) => onReverbDecayChange(Number(e.target.value))}
                     />&nbsp;&nbsp;
                     <pre>{reverbDecay}</pre>
+                </div>
+                <div style={{ display: 'flex' }}>
+                    <pre>Pre-delay</pre>&nbsp;
+                     <input
+                        disabled={disabled}
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={reverbPreDelay}
+                        onChange={(e) => onReverbPreDelayChange(Number(e.target.value))}
+                    />&nbsp;&nbsp;
+                    <pre>{reverbPreDelay}</pre>
                 </div>
             </div>
         )

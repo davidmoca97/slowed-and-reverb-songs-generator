@@ -2,13 +2,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import * as Tone from "tone";
 import { Player } from './Player/Player';
 import { Controls } from './Controls/Controls';
+import debounce from 'lodash.debounce';
+
+function _updateReverbDecay(reverb: Tone.Reverb, value: number) { reverb.decay = value };
+function _updateReverbPreDelay(reverb: Tone.Reverb, value: number) { reverb.preDelay = value };
+const updateReverbDecay = debounce(_updateReverbDecay, 500);
+const updateReverbPreDelay = debounce(_updateReverbPreDelay, 500);
 
 const TRACK_URL = `${process.env.PUBLIC_URL}/track.mp3`;
 
 const defaultValues = {
     playBackRate: 0.8,
     reverbWet: 0.5,
-    reverbDecay: 0.5
+    reverbDecay: 5,
+    reverbPreDelay: 0.1
 };
 
 interface MainViewProps { }
@@ -18,10 +25,12 @@ export const MainView: React.FC<MainViewProps> = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [songInfo, setSongInfo] = useState({ length: 0 });
     const [currentPlayback, setCurrentPlayback] = useState<number>(0);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const [playbackRate, setPlaybackRate] = useState<number>(defaultValues.playBackRate);
     const [reverbWet, setReverbWet] = useState<number>(defaultValues.reverbWet);
     const [reverbDecay, setReverbDecay] = useState<number>(defaultValues.reverbDecay);
+    const [reverbPreDelay, setReverbPreDelay] = useState<number>(defaultValues.reverbPreDelay);
 
     const reverb = useMemo(() => new Tone.Reverb(), []);
     const player = useMemo(() => new Tone.Player(), []);
@@ -38,6 +47,7 @@ export const MainView: React.FC<MainViewProps> = () => {
         Promise.all([p1, p2]).then(() => {
             player.playbackRate = defaultValues.playBackRate;
             reverb.wet.value = defaultValues.reverbWet;
+            reverb.decay = defaultValues.reverbDecay;
             reverb.toDestination();
             player.connect(reverb);
             onLoading();
@@ -58,7 +68,6 @@ export const MainView: React.FC<MainViewProps> = () => {
         player.start(0, value);
         setCurrentPlayback(value);
     };
-    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
         // if (isPlaying) {
@@ -78,15 +87,17 @@ export const MainView: React.FC<MainViewProps> = () => {
         player.playbackRate = value;
         setPlaybackRate(value);
     }
-
     const onReverbWetChange = (value: number) => {
         reverb.wet.value = value;
         setReverbWet(value);
     }
-
     const onReverbDecayChange = (value: number) => {
-        reverb.decay = value;
+        updateReverbDecay(reverb, value);
         setReverbDecay(value);
+    }
+    const onReverbPreDelayChange = (value: number) => {
+        updateReverbPreDelay(reverb, value);
+        setReverbPreDelay(value);
     }
 
     if (loading) {
@@ -113,9 +124,11 @@ export const MainView: React.FC<MainViewProps> = () => {
                         playbackRate={playbackRate}
                         reverbWet={reverbWet}
                         reverbDecay={reverbDecay}
+                        reverbPreDelay={reverbPreDelay}
                         onPlayBackRateChange={onPlayBackRateChange}
                         onReverbWetChange={onReverbWetChange}
                         onReverbDecayChange={onReverbDecayChange}
+                        onReverbPreDelayChange={onReverbPreDelayChange}
                     />
                 </div>
             </div>
@@ -123,12 +136,3 @@ export const MainView: React.FC<MainViewProps> = () => {
         </div>
     );
 };
-
-    // const buffer = new Tone.Buffer(TRACK_URL, () => {
-    //     const buff = buffer.get();
-    //     console.log(buff);
-    // }, (error) => {
-    //     console.error(error);
-    // });
-    // play as soon as the buffer is loaded
-    // player.autostart = true;
