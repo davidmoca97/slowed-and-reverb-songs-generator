@@ -3,6 +3,8 @@ import * as Tone from "tone";
 import { Player } from './Player/Player';
 import { Controls } from './Controls/Controls';
 import debounce from 'lodash.debounce';
+import audioBufferToWav from 'audiobuffer-to-wav';
+import { getTrackMetaData, ITrackMetaData } from './helpers';
 
 function _updateReverbDecay(reverb: Tone.Reverb, value: number) { reverb.decay = value };
 function _updateReverbPreDelay(reverb: Tone.Reverb, value: number) { reverb.preDelay = value };
@@ -13,8 +15,8 @@ const TRACK_URL = `${process.env.PUBLIC_URL}/track.mp3`;
 
 const defaultValues = {
     playBackRate: 0.8,
-    reverbWet: 0.5,
-    reverbDecay: 5,
+    reverbWet: 1,
+    reverbDecay: 10,
     reverbPreDelay: 0.1
 };
 
@@ -23,7 +25,7 @@ interface MainViewProps { }
 export const MainView: React.FC<MainViewProps> = () => {
 
     const [loading, setLoading] = useState<boolean>(true);
-    const [songInfo, setSongInfo] = useState({ length: 0 });
+    const [songInfo, setSongInfo] = useState<ITrackMetaData>({ length: 0 });
     const [currentPlayback, setCurrentPlayback] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -36,8 +38,10 @@ export const MainView: React.FC<MainViewProps> = () => {
     const player = useMemo(() => new Tone.Player(), []);
     let interval: NodeJS.Timeout;
 
-    const onLoading = () => {
-        setSongInfo(prev => ({ ...prev, length: player.buffer.duration }));
+    const onLoading = async () => {
+        const trackMetadata = await getTrackMetaData(TRACK_URL);
+        console.log(trackMetadata);
+        setSongInfo({ ...trackMetadata, length: player.buffer.duration });
         setLoading(false);
     };
 
@@ -100,6 +104,34 @@ export const MainView: React.FC<MainViewProps> = () => {
         setReverbPreDelay(value);
     }
 
+    const onSave = () => {
+        const duration = player.buffer.duration + ((1 - playbackRate) * player.buffer.duration);
+        const offlineContext = new Tone.OfflineContext (2, duration, 44100);
+        Tone.setContext(offlineContext);
+        const _reverb = new Tone.Reverb();
+        const _player = new Tone.Player();
+        const p1 = _reverb.generate();
+        const p2 = _player.load(TRACK_URL);
+        Promise.all([p1, p2]).then(async () => {
+            _reverb.wet.value = reverbWet;
+            _reverb.decay = reverbDecay;
+            _reverb.preDelay = reverbPreDelay;
+            _player.playbackRate = playbackRate;
+            _player.connect(_reverb);
+            _reverb.toMaster();
+            _player.start(0);
+            const buffer = await offlineContext.render(false);
+            const wavBuffer = audioBufferToWav(buffer.get()!);
+            
+            const blob = new Blob([wavBuffer], { type: "audio/wav" });
+            const url = window.URL.createObjectURL(blob);
+            document.querySelector('audio')!.src = url;
+        });
+        // To clean buffer
+        // window.URL.revokeObjectURL(url);
+    }
+    
+
     if (loading) {
         return <div>Loading...</div>
     }
@@ -130,6 +162,8 @@ export const MainView: React.FC<MainViewProps> = () => {
                         onReverbDecayChange={onReverbDecayChange}
                         onReverbPreDelayChange={onReverbPreDelayChange}
                     />
+                    <button onClick={onSave}>Save</button>
+                    <audio controls={true}></audio>
                 </div>
             </div>
 

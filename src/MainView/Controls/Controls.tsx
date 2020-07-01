@@ -25,7 +25,6 @@ export const Controls: React.FC<IControlsProps> =
                 <div style={{ display: 'flex' }}>
                     <pre>Playback speed</pre>&nbsp;
                      <input
-                        disabled={disabled}
                         type="range"
                         min="0.6"
                         max="1"
@@ -39,7 +38,6 @@ export const Controls: React.FC<IControlsProps> =
                 <div style={{ display: 'flex' }}>
                     <pre>Reverb</pre>&nbsp;
                      <input
-                        disabled={disabled}
                         type="range"
                         min="0"
                         max="1"
@@ -52,7 +50,6 @@ export const Controls: React.FC<IControlsProps> =
                 <div style={{ display: 'flex' }}>
                     <pre>Decay</pre>&nbsp;
                      <input
-                        // disabled={disabled}
                         type="range"
                         min="0.5"
                         max="10"
@@ -65,7 +62,6 @@ export const Controls: React.FC<IControlsProps> =
                 <div style={{ display: 'flex' }}>
                     <pre>Pre-delay</pre>&nbsp;
                      <input
-                        disabled={disabled}
                         type="range"
                         min="0"
                         max="1"
