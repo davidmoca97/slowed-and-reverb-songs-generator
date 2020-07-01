@@ -28,6 +28,8 @@ export const MainView: React.FC<MainViewProps> = () => {
     const [songInfo, setSongInfo] = useState<ITrackMetaData>({ length: 0 });
     const [currentPlayback, setCurrentPlayback] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [downloadURL, setDownloadURL] = useState<string | undefined>();
+    const [preparingDownload, setPreparingDownload] = useState<boolean>(false);
 
     const [playbackRate, setPlaybackRate] = useState<number>(defaultValues.playBackRate);
     const [reverbWet, setReverbWet] = useState<number>(defaultValues.reverbWet);
@@ -40,7 +42,6 @@ export const MainView: React.FC<MainViewProps> = () => {
 
     const onLoading = async () => {
         const trackMetadata = await getTrackMetaData(TRACK_URL);
-        console.log(trackMetadata);
         setSongInfo({ ...trackMetadata, length: player.buffer.duration });
         setLoading(false);
     };
@@ -55,8 +56,10 @@ export const MainView: React.FC<MainViewProps> = () => {
             reverb.toDestination();
             player.connect(reverb);
             onLoading();
-            console.log("done");
         });
+        return () => {
+            if (downloadURL) window.URL.revokeObjectURL(downloadURL);
+        }
     }, []);
 
     const onPlay = () => {
@@ -105,8 +108,9 @@ export const MainView: React.FC<MainViewProps> = () => {
     }
 
     const onSave = () => {
+        setPreparingDownload(true);
         const duration = player.buffer.duration + ((1 - playbackRate) * player.buffer.duration);
-        const offlineContext = new Tone.OfflineContext (2, duration, 44100);
+        const offlineContext = new Tone.OfflineContext(2, duration, 44100);
         Tone.setContext(offlineContext);
         const _reverb = new Tone.Reverb();
         const _player = new Tone.Player();
@@ -121,16 +125,19 @@ export const MainView: React.FC<MainViewProps> = () => {
             _reverb.toMaster();
             _player.start(0);
             const buffer = await offlineContext.render(false);
-            const wavBuffer = audioBufferToWav(buffer.get()!);
-            
+            const realBuffer = buffer.get();
+            if (!realBuffer) {
+                console.error("Error getting the buffer of the Audio Context");
+                return;
+            }
+            const wavBuffer = audioBufferToWav(realBuffer);
             const blob = new Blob([wavBuffer], { type: "audio/wav" });
             const url = window.URL.createObjectURL(blob);
-            document.querySelector('audio')!.src = url;
+            setDownloadURL(url);
+            setPreparingDownload(false);
         });
-        // To clean buffer
-        // window.URL.revokeObjectURL(url);
     }
-    
+
 
     if (loading) {
         return <div>Loading...</div>
@@ -162,11 +169,16 @@ export const MainView: React.FC<MainViewProps> = () => {
                         onReverbDecayChange={onReverbDecayChange}
                         onReverbPreDelayChange={onReverbPreDelayChange}
                     />
-                    <button onClick={onSave}>Save</button>
-                    <audio controls={true}></audio>
+                    <button style={{marginBottom: '20px'}} disabled={preparingDownload} onClick={onSave}>Save</button>
+                    {
+                        Boolean(downloadURL) && !preparingDownload ?
+                            <audio id="finalTrack" src={downloadURL} controls={true}></audio>
+                        : (preparingDownload) ?
+                            <div>Loading...</div>
+                        : null
+                    }
                 </div>
             </div>
-
         </div>
     );
 };
