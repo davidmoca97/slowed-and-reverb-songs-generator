@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './Player.module.css';
+import { ITrackMetaData } from '../helpers';
 
 interface IPlayerProps {
     onPlay: Function;
@@ -7,14 +8,11 @@ interface IPlayerProps {
     onPlaybackPositionChange: (value: number) => void;
     isPlaying: boolean;
     currentPlayback: number;
-    songInfo?: {
-        name?: string;
-        artist?: string;
-        length?: number;
-    }
+    songInfo?: ITrackMetaData;
 }
 
-export const Player: React.FC<IPlayerProps> = ({ onPlay, onStop, onPlaybackPositionChange, currentPlayback, songInfo, isPlaying }) => {
+export const Player: React.FC<IPlayerProps> = 
+    ({ onPlay, onStop, currentPlayback, songInfo, isPlaying, onPlaybackPositionChange }) => {
 
     return (
         <div className={styles['container']}>
@@ -32,8 +30,8 @@ export const Player: React.FC<IPlayerProps> = ({ onPlay, onStop, onPlaybackPosit
                 />
             </div>
             <div className={styles['track-info']}>
-                <div>Happiness is a butterfly</div>
-                <div>Lana del Rey</div>
+                <div>{songInfo?.title}</div>
+                <div>{songInfo?.artist}</div>
             </div>
             <div className={styles['controls']}>
                 <button onClick={() => onPlay()}>Play</button>&nbsp;
