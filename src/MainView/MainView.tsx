@@ -75,19 +75,24 @@ export const MainView: React.FC<MainViewProps> = () => {
         player.start(0, value);
         setCurrentPlayback(value);
     };
+    const onSongOver = () => {
+        player.stop();
+        setIsPlaying(false);
+        setCurrentPlayback(0);
+    }
 
     useEffect(() => {
-        // if (isPlaying) {
-        //     interval = setInterval(() => {
-        //         setCurrentPlayback(prev => prev + 0.1);
-        //     }, 100);
-        // } else {
-        //     if (interval) clearInterval(interval);
-        // }
-        // return () => {
-        //     clearInterval(interval);
-        //     // player.dispose();
-        // };
+        if (isPlaying) {
+            interval = setInterval(() => {
+                setCurrentPlayback(prev => prev + 0.1);
+            }, 100);
+        } else {
+            if (interval) clearInterval(interval);
+        }
+        return () => {
+            clearInterval(interval);
+            // player.dispose();
+        };
     }, [isPlaying]);
 
     const onPlayBackRateChange = (value: number) => {
@@ -108,6 +113,10 @@ export const MainView: React.FC<MainViewProps> = () => {
     }
 
     const onSave = () => {
+        if (downloadURL) {
+            window.URL.revokeObjectURL(downloadURL); 
+            setDownloadURL(undefined);
+        }
         setPreparingDownload(true);
         const duration = player.buffer.duration + ((1 - playbackRate) * player.buffer.duration);
         const offlineContext = new Tone.OfflineContext(2, duration, 44100);
@@ -151,6 +160,7 @@ export const MainView: React.FC<MainViewProps> = () => {
                     <Player
                         onPlay={onPlay}
                         onStop={onStop}
+                        onSongOver={onSongOver}
                         onPlaybackPositionChange={onPlaybackPositionChange}
                         currentPlayback={currentPlayback}
                         isPlaying={isPlaying}

@@ -5,6 +5,7 @@ import { ITrackMetaData } from '../helpers';
 interface IPlayerProps {
     onPlay: Function;
     onStop: Function;
+    onSongOver: Function;
     onPlaybackPositionChange: (value: number) => void;
     isPlaying: boolean;
     currentPlayback: number;
@@ -12,7 +13,11 @@ interface IPlayerProps {
 }
 
 export const Player: React.FC<IPlayerProps> = 
-    ({ onPlay, onStop, currentPlayback, songInfo, isPlaying, onPlaybackPositionChange }) => {
+    ({ onPlay, onStop, currentPlayback, songInfo, isPlaying, onSongOver, onPlaybackPositionChange }) => {
+
+    if (currentPlayback > (songInfo?.length || 0)) {
+        onSongOver();
+    }
 
     return (
         <div className={styles['container']}>
