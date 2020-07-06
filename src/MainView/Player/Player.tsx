@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './Player.module.css';
 import { ITrackMetaData } from '../helpers';
+import { Button } from '../Button/Button';
 
 interface IPlayerProps {
     onPlay: Function;
@@ -39,8 +40,8 @@ export const Player: React.FC<IPlayerProps> =
                 <div>{songInfo?.artist}</div>
             </div>
             <div className={styles['controls']}>
-                <button onClick={() => onPlay()}>Play</button>&nbsp;
-                <button onClick={() => onStop()}>Stop</button>
+                <Button onClick={() => onPlay()}>Play</Button>&nbsp;
+                <Button onClick={() => onStop()}>Stop</Button>
             </div>
         </div>
     )

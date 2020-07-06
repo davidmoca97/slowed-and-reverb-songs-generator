@@ -1,0 +1,25 @@
+.control-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.control-container > pre {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.control {
+    display: flex;
+    width: 100%;
+}
+.control > input {
+    width: 100%;
+}
+
+.sub-title {
+    margin-bottom: 25px;
+}

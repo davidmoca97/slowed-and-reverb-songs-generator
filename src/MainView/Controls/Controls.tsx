@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './Controls.module.css';
 
 export interface IControlsProps {
     playbackRate: number;
@@ -13,63 +14,72 @@ export interface IControlsProps {
 }
 
 export const Controls: React.FC<IControlsProps> =
-    ({ 
+    ({
         onPlayBackRateChange, onReverbWetChange, onReverbDecayChange, onReverbPreDelayChange,
         playbackRate, reverbWet, reverbDecay, reverbPreDelay,
-        disabled 
+        disabled
     }) => {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <pre>C O N T R O L S</pre>
+            <div className={styles['container']}>
+                <pre className={styles['sub-title']}>C O N T R O L S</pre>
 
-                <div style={{ display: 'flex' }}>
-                    <pre>Playback speed</pre>&nbsp;
-                     <input
-                        type="range"
-                        min="0.6"
-                        max="1"
-                        step="0.05"
-                        value={playbackRate}
-                        onChange={(e) => onPlayBackRateChange(Number(e.target.value))}
-                    />&nbsp;&nbsp;
+                <div className={styles['control-container']}>
+                    <pre>Playback speed</pre>
+                    <div className={styles['control']}>
+                        <input
+                            type="range"
+                            min="0.6"
+                            max="1"
+                            step="0.05"
+                            value={playbackRate}
+                            onChange={(e) => onPlayBackRateChange(Number(e.target.value))}
+                        />&nbsp;&nbsp;
                     <pre>{playbackRate}</pre>
+                    </div>
                 </div>
 
-                <div style={{ display: 'flex' }}>
-                    <pre>Reverb</pre>&nbsp;
-                     <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.05"
-                        value={reverbWet}
-                        onChange={(e) => onReverbWetChange(Number(e.target.value))}
-                    />&nbsp;&nbsp;
+                <div className={styles['control-container']}>
+                    <pre>Reverb</pre>
+                    <div className={styles['control']}>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            value={reverbWet}
+                            onChange={(e) => onReverbWetChange(Number(e.target.value))}
+                        />&nbsp;&nbsp;
                     <pre>{reverbWet}</pre>
+                    </div>
                 </div>
-                <div style={{ display: 'flex' }}>
-                    <pre>Decay</pre>&nbsp;
-                     <input
-                        type="range"
-                        min="0.5"
-                        max="10"
-                        step="0.5"
-                        value={reverbDecay}
-                        onChange={(e) => onReverbDecayChange(Number(e.target.value))}
-                    />&nbsp;&nbsp;
+                <div className={styles['control-container']}>
+                    <pre>Decay</pre>
+                    <div className={styles['control']}>
+                        <input
+                            type="range"
+                            min="0.5"
+                            max="10"
+                            step="0.5"
+                            value={reverbDecay}
+                            onChange={(e) => onReverbDecayChange(Number(e.target.value))}
+                        />&nbsp;&nbsp;
                     <pre>{reverbDecay}</pre>
+
+                    </div>
                 </div>
-                <div style={{ display: 'flex' }}>
-                    <pre>Pre-delay</pre>&nbsp;
-                     <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.1"
-                        value={reverbPreDelay}
-                        onChange={(e) => onReverbPreDelayChange(Number(e.target.value))}
-                    />&nbsp;&nbsp;
+                <div className={styles['control-container']}>
+                    <pre>Pre-delay</pre>
+                    <div className={styles['control']}>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={reverbPreDelay}
+                            onChange={(e) => onReverbPreDelayChange(Number(e.target.value))}
+                        />&nbsp;&nbsp;
                     <pre>{reverbPreDelay}</pre>
+                    </div>
                 </div>
             </div>
         )

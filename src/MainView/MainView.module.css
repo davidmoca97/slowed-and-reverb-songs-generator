@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+}
+
+.player-wrapper {
+    display: flex;
+}
+
+.controls-wrapper {
+    margin-left: 50px;
+    width: 100%;
+}

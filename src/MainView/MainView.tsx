@@ -5,6 +5,8 @@ import { Controls } from './Controls/Controls';
 import debounce from 'lodash.debounce';
 import audioBufferToWav from 'audiobuffer-to-wav';
 import { getTrackMetaData, ITrackMetaData } from './helpers';
+import { Button } from './Button/Button';
+import styles from './MainView.module.css';
 
 function _updateReverbDecay(reverb: Tone.Reverb, value: number) { reverb.decay = value };
 function _updateReverbPreDelay(reverb: Tone.Reverb, value: number) { reverb.preDelay = value };
@@ -114,7 +116,7 @@ export const MainView: React.FC<MainViewProps> = () => {
 
     const onSave = () => {
         if (downloadURL) {
-            window.URL.revokeObjectURL(downloadURL); 
+            window.URL.revokeObjectURL(downloadURL);
             setDownloadURL(undefined);
         }
         setPreparingDownload(true);
@@ -153,41 +155,38 @@ export const MainView: React.FC<MainViewProps> = () => {
     }
 
     return (
-        <div style={{ margin: '25px' }}>
-            <pre>A E S T H E T I C   S O N G S   G E N E R A T O R</pre>
-            <div style={{ display: 'flex' }}>
-                <div style={{ width: '30%' }}>
-                    <Player
-                        onPlay={onPlay}
-                        onStop={onStop}
-                        onSongOver={onSongOver}
-                        onPlaybackPositionChange={onPlaybackPositionChange}
-                        currentPlayback={currentPlayback}
-                        isPlaying={isPlaying}
-                        songInfo={songInfo}
-                    />
-                </div>
-                <div style={{ width: '30%', marginLeft: '100px' }}>
-                    <Controls
-                        disabled={!isPlaying}
-                        playbackRate={playbackRate}
-                        reverbWet={reverbWet}
-                        reverbDecay={reverbDecay}
-                        reverbPreDelay={reverbPreDelay}
-                        onPlayBackRateChange={onPlayBackRateChange}
-                        onReverbWetChange={onReverbWetChange}
-                        onReverbDecayChange={onReverbDecayChange}
-                        onReverbPreDelayChange={onReverbPreDelayChange}
-                    />
-                    <button style={{marginBottom: '20px'}} disabled={preparingDownload} onClick={onSave}>Save</button>
-                    {
-                        Boolean(downloadURL) && !preparingDownload ?
-                            <audio id="finalTrack" src={downloadURL} controls={true}></audio>
+        <div className={styles['container']}>
+            <div className={styles['player-wrapper']}>
+                <Player
+                    onPlay={onPlay}
+                    onStop={onStop}
+                    onSongOver={onSongOver}
+                    onPlaybackPositionChange={onPlaybackPositionChange}
+                    currentPlayback={currentPlayback}
+                    isPlaying={isPlaying}
+                    songInfo={songInfo}
+                />
+            </div>
+            <div className={styles['controls-wrapper']}>
+                <Controls
+                    disabled={!isPlaying}
+                    playbackRate={playbackRate}
+                    reverbWet={reverbWet}
+                    reverbDecay={reverbDecay}
+                    reverbPreDelay={reverbPreDelay}
+                    onPlayBackRateChange={onPlayBackRateChange}
+                    onReverbWetChange={onReverbWetChange}
+                    onReverbDecayChange={onReverbDecayChange}
+                    onReverbPreDelayChange={onReverbPreDelayChange}
+                />
+                <Button fullWidth disabled={preparingDownload} onClick={onSave}>Save & Download</Button>
+                {
+                    Boolean(downloadURL) && !preparingDownload ?
+                        <audio id="finalTrack" src={downloadURL} controls={true}></audio>
                         : (preparingDownload) ?
                             <div>Loading...</div>
-                        : null
-                    }
-                </div>
+                            : null
+                }
             </div>
         </div>
     );
