@@ -143,12 +143,27 @@ export const MainView: React.FC<MainViewProps> = () => {
             }
             const wavBuffer = audioBufferToWav(realBuffer);
             const blob = new Blob([wavBuffer], { type: "audio/wav" });
-            const url = window.URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
+            downloadFile(url);
             setDownloadURL(url);
             setPreparingDownload(false);
         });
     }
 
+    const downloadFile = (url: string): void => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = 'reverb-song.wav';
+        document.body.appendChild(link);
+        link.dispatchEvent(
+          new MouseEvent('click', { 
+            bubbles: true, 
+            cancelable: true, 
+            view: window 
+          })
+        );
+        document.body.removeChild(link);
+    }
 
     if (loading) {
         return <div>Loading...</div>
@@ -182,7 +197,7 @@ export const MainView: React.FC<MainViewProps> = () => {
                 <Button fullWidth disabled={preparingDownload} onClick={onSave}>Save & Download</Button>
                 {
                     Boolean(downloadURL) && !preparingDownload ?
-                        <audio id="finalTrack" src={downloadURL} controls={true}></audio>
+                        <audio id="finalTrack" src={downloadURL}></audio>
                         : (preparingDownload) ?
                             <div>Loading...</div>
                             : null

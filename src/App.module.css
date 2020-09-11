@@ -1,11 +1,13 @@
 .background-image {
-  background-image: url("https://media.giphy.com/media/fwo7bzEVxbYS4eSNVd/giphy.gif");
-  filter: blur(8px);
-  -webkit-filter: blur(8px);
+  /* background-image: url("https://media.giphy.com/media/fwo7bzEVxbYS4eSNVd/giphy.gif"); */
+  background-image: url("https://media.giphy.com/media/nSiNho356rXH2/giphy.gif");
+  /* filter: blur(8px); */
+  /* -webkit-filter: blur(8px); */
   height: 100%; 
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  -webkit-transform: rotateX(0);
 }
 
 .content {
