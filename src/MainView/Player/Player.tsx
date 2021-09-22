@@ -23,6 +23,7 @@ export const Player: React.FC<IPlayerProps> =
     return (
         <div className={styles['container']}>
             <img className={styles['cover-art']}
+                alt="cover art"
                 src="https://images.genius.com/8b5aa2421162cc34e69f8bd18a8b69c0.1000x1000x1.jpg" />
             <div className={styles['playback']}>
                 <input type="range"

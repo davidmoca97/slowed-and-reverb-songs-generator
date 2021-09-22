@@ -13,14 +13,18 @@ function _updateReverbPreDelay(reverb: Tone.Reverb, value: number) { reverb.preD
 const updateReverbDecay = debounce(_updateReverbDecay, 500);
 const updateReverbPreDelay = debounce(_updateReverbPreDelay, 500);
 
-const TRACK_URL = `${process.env.PUBLIC_URL}/track.mp3`;
+const TRACK_URL = `${process.env.PUBLIC_URL}/track2.mp3`;
 
 const defaultValues = {
     playBackRate: 0.8,
-    reverbWet: 1,
-    reverbDecay: 10,
+    reverbWet: 0.6,
+    reverbDecay: 6,
     reverbPreDelay: 0.1
 };
+
+const getSongLength = (bufferDuration: number, playbackRate: number) => {
+    return bufferDuration / playbackRate;
+}
 
 interface MainViewProps { }
 
@@ -44,7 +48,7 @@ export const MainView: React.FC<MainViewProps> = () => {
 
     const onLoading = async () => {
         const trackMetadata = await getTrackMetaData(TRACK_URL);
-        setSongInfo({ ...trackMetadata, length: player.buffer.duration });
+        setSongInfo({ ...trackMetadata, length: getSongLength(player.buffer.duration, playbackRate) });
         setLoading(false);
     };
 
@@ -74,7 +78,7 @@ export const MainView: React.FC<MainViewProps> = () => {
     }
     const onPlaybackPositionChange = (value: number) => {
         player.stop();
-        player.start(0, value);
+        player.start(0, value * playbackRate);
         setCurrentPlayback(value);
     };
     const onSongOver = () => {
@@ -86,8 +90,8 @@ export const MainView: React.FC<MainViewProps> = () => {
     useEffect(() => {
         if (isPlaying) {
             interval = setInterval(() => {
-                setCurrentPlayback(prev => prev + 0.1);
-            }, 100);
+                setCurrentPlayback(prev => prev + 1);
+            }, 1000);
         } else {
             if (interval) clearInterval(interval);
         }
@@ -97,9 +101,22 @@ export const MainView: React.FC<MainViewProps> = () => {
         };
     }, [isPlaying]);
 
-    const onPlayBackRateChange = (value: number) => {
-        player.playbackRate = value;
-        setPlaybackRate(value);
+    const onPlayBackRateChange = (newPlayBackRate: number) => {
+        const newSongLength = getSongLength(player.buffer.duration, newPlayBackRate);
+        const previousSongLength = songInfo.length;
+        player.playbackRate = newPlayBackRate;
+        setPlaybackRate(newPlayBackRate);
+        setSongInfo(currentValue => ({ ...currentValue, length: newSongLength }));
+
+        // 244 -> 1
+        // 305 -> 1.25
+
+        // 305 -> 1
+        // 244 ->
+
+        setCurrentPlayback(currentPlaybackPosition => {
+            return (newSongLength * currentPlaybackPosition) / (previousSongLength || 1);
+        });
     }
     const onReverbWetChange = (value: number) => {
         reverb.wet.value = value;
@@ -120,7 +137,7 @@ export const MainView: React.FC<MainViewProps> = () => {
             setDownloadURL(undefined);
         }
         setPreparingDownload(true);
-        const duration = player.buffer.duration + ((1 - playbackRate) * player.buffer.duration);
+        const duration = getSongLength(player.buffer.duration, playbackRate);
         const offlineContext = new Tone.OfflineContext(2, duration, 44100);
         Tone.setContext(offlineContext);
         const _reverb = new Tone.Reverb();
@@ -156,11 +173,11 @@ export const MainView: React.FC<MainViewProps> = () => {
         link.download = 'reverb-song.wav';
         document.body.appendChild(link);
         link.dispatchEvent(
-          new MouseEvent('click', { 
-            bubbles: true, 
-            cancelable: true, 
-            view: window 
-          })
+            new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+            })
         );
         document.body.removeChild(link);
     }
@@ -170,7 +187,7 @@ export const MainView: React.FC<MainViewProps> = () => {
     }
 
     return (
-        <div className={styles['container']}>
+        <div id="container" className={styles['container']}>
             <div className={styles['player-wrapper']}>
                 <Player
                     onPlay={onPlay}
