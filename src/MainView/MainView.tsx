@@ -4,7 +4,7 @@ import { Player } from './Player/Player';
 import { Controls } from './Controls/Controls';
 import debounce from 'lodash.debounce';
 import audioBufferToWav from 'audiobuffer-to-wav';
-import { getTrackMetaData, ITrackMetaData } from './helpers';
+import { DEFAULT_TRACK_METADATA, getTrackMetaData, ITrackMetaData } from './helpers';
 import { Button } from './Button/Button';
 import styles from './MainView.module.css';
 
@@ -30,13 +30,15 @@ interface MainViewProps { }
 
 export const MainView: React.FC<MainViewProps> = () => {
 
-    const [loading, setLoading] = useState<boolean>(true);
-    const [songInfo, setSongInfo] = useState<ITrackMetaData>({ length: 0 });
+    const [loading, setLoading] = useState<boolean>(false);
+    const [songInfo, setSongInfo] = useState<ITrackMetaData>(DEFAULT_TRACK_METADATA);
     const [currentPlayback, setCurrentPlayback] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [downloadURL, setDownloadURL] = useState<string | undefined>();
     const [preparingDownload, setPreparingDownload] = useState<boolean>(false);
+    const [uploadedFile, setUploadedFile] = useState<{ file: File, objectURL: string } | undefined>();
 
+    // Controls
     const [playbackRate, setPlaybackRate] = useState<number>(defaultValues.playBackRate);
     const [reverbWet, setReverbWet] = useState<number>(defaultValues.reverbWet);
     const [reverbDecay, setReverbDecay] = useState<number>(defaultValues.reverbDecay);
@@ -46,23 +48,26 @@ export const MainView: React.FC<MainViewProps> = () => {
     const player = useMemo(() => new Tone.Player(), []);
     let interval: NodeJS.Timeout;
 
-    const onLoading = async () => {
-        const trackMetadata = await getTrackMetaData(TRACK_URL);
+    const onLoading = async (trackUrl: string, file?: File) => {
+        const trackMetadata = await getTrackMetaData(file || trackUrl);
         setSongInfo({ ...trackMetadata, length: getSongLength(player.buffer.duration, playbackRate) });
         setLoading(false);
     };
 
-    useEffect(() => {
+    const onInit = (trackUrl: string = TRACK_URL, file?: File) => {
         const p1 = reverb.generate();
-        const p2 = player.load(TRACK_URL);
+        const p2 = player.load(trackUrl);
         Promise.all([p1, p2]).then(() => {
             player.playbackRate = defaultValues.playBackRate;
             reverb.wet.value = defaultValues.reverbWet;
             reverb.decay = defaultValues.reverbDecay;
             reverb.toDestination();
             player.connect(reverb);
-            onLoading();
+            onLoading(trackUrl, file);
         });
+    };
+
+    useEffect(() => {
         return () => {
             if (downloadURL) window.URL.revokeObjectURL(downloadURL);
         }
@@ -97,7 +102,6 @@ export const MainView: React.FC<MainViewProps> = () => {
         }
         return () => {
             clearInterval(interval);
-            // player.dispose();
         };
     }, [isPlaying]);
 
@@ -107,15 +111,8 @@ export const MainView: React.FC<MainViewProps> = () => {
         player.playbackRate = newPlayBackRate;
         setPlaybackRate(newPlayBackRate);
         setSongInfo(currentValue => ({ ...currentValue, length: newSongLength }));
-
-        // 244 -> 1
-        // 305 -> 1.25
-
-        // 305 -> 1
-        // 244 ->
-
         setCurrentPlayback(currentPlaybackPosition => {
-            return (newSongLength * currentPlaybackPosition) / (previousSongLength || 1);
+            return (newSongLength * currentPlaybackPosition) / (previousSongLength);
         });
     }
     const onReverbWetChange = (value: number) => {
@@ -143,7 +140,7 @@ export const MainView: React.FC<MainViewProps> = () => {
         const _reverb = new Tone.Reverb();
         const _player = new Tone.Player();
         const p1 = _reverb.generate();
-        const p2 = _player.load(TRACK_URL);
+        const p2 = _player.load(uploadedFile?.objectURL as string);
         Promise.all([p1, p2]).then(async () => {
             _reverb.wet.value = reverbWet;
             _reverb.decay = reverbDecay;
@@ -182,8 +179,33 @@ export const MainView: React.FC<MainViewProps> = () => {
         document.body.removeChild(link);
     }
 
+    const onFileDropped = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files?.length) {
+            return;
+        }
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+            const url = event.target?.result;
+            if (!url || typeof url !== "string") {
+                console.error("Couldn't load the file");
+                return;
+            }
+            setUploadedFile({ file, objectURL: url });
+            onInit(url, file);
+        });
+        setLoading(true);
+        reader.readAsDataURL(file);
+    }
+
     if (loading) {
         return <div>Loading...</div>
+    }
+
+    if (!player.loaded) {
+        return (
+            <input name="song-input" type="file" accept="audio/mp3" onChange={onFileDropped} />
+        );
     }
 
     return (
