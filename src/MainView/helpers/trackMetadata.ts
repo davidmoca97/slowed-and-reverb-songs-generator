@@ -1,6 +1,6 @@
 import jsmediatags from "jsmediatags";
 
-export interface ITrackMetaData {
+export type TrackMetadata = {
     album: string;
     artist: string;
     title: string;
@@ -8,17 +8,14 @@ export interface ITrackMetaData {
     length: number;
 }
 
-export const DEFAULT_TRACK_METADATA: ITrackMetaData = {
+export const DEFAULT_TRACK_METADATA: TrackMetadata = {
     album: "Unknown album",
     artist: "Unknown Artist",
     title: "Unknown Song",
     length: 0
 }
 
-export const getTrackMetaData = (source: string | File): Promise<ITrackMetaData> => {
-    if (typeof source === "string") {
-        source = `http://localhost:3000${source}`;
-    }
+export const getTrackMetaData = (source: File): Promise<TrackMetadata> => {
     return new Promise((resolve) => {
         jsmediatags.read(source, {
             onSuccess: (tag) => {
@@ -37,8 +34,3 @@ export const getTrackMetaData = (source: string | File): Promise<ITrackMetaData>
         });
     });
 };
-
-// const getRandomGif = () => {
-//     const url = `${process.env.PUBLIC_URL}/go.wasm`;
-//     WebAssembly.instantiateStreaming(fetch(url),)
-// }

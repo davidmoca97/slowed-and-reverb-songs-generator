@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Player.module.css';
-import { ITrackMetaData } from '../helpers';
 import { Button } from '../Button/Button';
+import { TrackMetadata } from '../helpers/trackMetadata';
 
 interface IPlayerProps {
     onPlay: Function;
@@ -10,7 +10,7 @@ interface IPlayerProps {
     onPlaybackPositionChange: (value: number) => void;
     isPlaying: boolean;
     currentPlayback: number;
-    songInfo?: ITrackMetaData;
+    songInfo?: TrackMetadata;
 }
 
 export const Player: React.FC<IPlayerProps> = 
