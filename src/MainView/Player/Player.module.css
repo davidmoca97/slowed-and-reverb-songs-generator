@@ -3,6 +3,13 @@
     height: 300px;
     border-radius: 5px;
 }
+.cover-art.empty {
+    background-color: #008080;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 150px;
+}
 
 .container {
     display: flex;

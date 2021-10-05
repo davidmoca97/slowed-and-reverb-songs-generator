@@ -1,10 +1,11 @@
 import jsmediatags from "jsmediatags";
+import { PictureType } from "jsmediatags/types";
 
 export type TrackMetadata = {
     album: string;
     artist: string;
     title: string;
-    picture?: number[];
+    picture?: PictureType;
     length: number;
 }
 
@@ -23,7 +24,7 @@ export const getTrackMetaData = (source: File): Promise<TrackMetadata> => {
                     album: tag.tags.album || "Unknown album",
                     artist: tag.tags.artist || "Unknown Artist",
                     title: tag.tags.title || "Unknown Song",
-                    picture: tag.tags.picture?.data,
+                    picture: tag.tags.picture,
                     length: 0
                 });
             },
