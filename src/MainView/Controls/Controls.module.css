@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    height: 60px;
 }
 .control-container > pre {
     margin: 0;
@@ -14,6 +15,7 @@
 
 .control {
     display: flex;
+    justify-content: space-between;
     width: 100%;
 }
 .control > input {

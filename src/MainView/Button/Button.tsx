@@ -7,17 +7,15 @@ interface IButtonProps extends React.HTMLProps<HTMLButtonElement> {
 }
 
 export const Button: React.FC<IButtonProps> = ({ children, fullWidth, className, ...rest }) => {
-    const _className = cx(className, styles['btn'], {
+    const buttonClassName = cx(className, styles['btn'], {
         [styles['btn-full']]: fullWidth
     })
     return (
         <button
             {...rest as any}
-            className={_className}
+            className={buttonClassName}
         >
             {children}
         </button>
     )
 };
-
-

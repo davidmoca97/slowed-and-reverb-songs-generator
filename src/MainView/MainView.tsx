@@ -133,13 +133,20 @@ export const MainView: React.FC = () => {
         initializePlayer: onInit
     });
 
+    const loadSong = () => {
+        document.getElementById("songInput")?.click();
+    }
+
     if (loading) {
         return <div>Loading...</div>
     }
 
     if (!player.loaded) {
         return (
-            <input name="song-input" type="file" accept="audio/mp3" onChange={onFileUpload} />
+            <>
+                <Button fullWidth disabled={preparingDownload} onClick={loadSong}>Upload song</Button>
+                <input id="songInput" name="song-input" type="file" accept="audio/mp3" onChange={onFileUpload} />
+            </>
         );
     }
 
@@ -158,7 +165,6 @@ export const MainView: React.FC = () => {
             </div>
             <div className={styles['controls-wrapper']}>
                 <Controls
-                    disabled={!isPlaying}
                     playbackRate={playbackRate}
                     reverbWet={reverbWet}
                     reverbDecay={reverbDecay}
@@ -170,11 +176,7 @@ export const MainView: React.FC = () => {
                 />
                 <Button fullWidth disabled={preparingDownload} onClick={onSave}>Save & Download</Button>
                 {
-                    Boolean(downloadURL) && !preparingDownload ?
-                        <audio id="finalTrack" src={downloadURL}></audio>
-                        : (preparingDownload) ?
-                            <div>Loading...</div>
-                            : null
+                    preparingDownload && <div>Loading...</div>
                 }
             </div>
         </div>

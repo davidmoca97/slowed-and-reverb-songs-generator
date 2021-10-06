@@ -10,75 +10,76 @@ export interface IControlsProps {
     onReverbWetChange: (value: number) => void;
     onReverbDecayChange: (value: number) => void;
     onReverbPreDelayChange: (value: number) => void;
-    disabled: boolean;
 }
 
 export const Controls: React.FC<IControlsProps> =
     ({
         onPlayBackRateChange, onReverbWetChange, onReverbDecayChange, onReverbPreDelayChange,
         playbackRate, reverbWet, reverbDecay, reverbPreDelay,
-        disabled
     }) => {
         return (
             <div className={styles['container']}>
-                <pre className={styles['sub-title']}>C O N T R O L S</pre>
+                <p className={styles['sub-title']}>C O N T R O L S</p>
 
                 <div className={styles['control-container']}>
-                    <pre>Playback speed</pre>
+                    <label htmlFor="playbackSpeed">Playback speed</label>
                     <div className={styles['control']}>
                         <input
+                            id="playbackSpeed"
                             type="range"
                             min="0.6"
                             max="1"
                             step="0.05"
                             value={playbackRate}
                             onChange={(e) => onPlayBackRateChange(Number(e.target.value))}
-                        />&nbsp;&nbsp;
-                    <pre>{playbackRate}</pre>
+                        />
+                        <span>{playbackRate}</span>
                     </div>
                 </div>
 
                 <div className={styles['control-container']}>
-                    <pre>Reverb</pre>
+                    <label htmlFor="reverb">Reverb</label>
                     <div className={styles['control']}>
                         <input
+                            id="reverb"
                             type="range"
                             min="0"
                             max="1"
                             step="0.05"
                             value={reverbWet}
                             onChange={(e) => onReverbWetChange(Number(e.target.value))}
-                        />&nbsp;&nbsp;
-                    <pre>{reverbWet}</pre>
+                        />
+                        <span>{reverbWet}</span>
                     </div>
                 </div>
                 <div className={styles['control-container']}>
-                    <pre>Decay</pre>
+                    <label htmlFor="decay">Decay</label>
                     <div className={styles['control']}>
                         <input
+                            id="decay"
                             type="range"
                             min="0.5"
                             max="10"
                             step="0.5"
                             value={reverbDecay}
                             onChange={(e) => onReverbDecayChange(Number(e.target.value))}
-                        />&nbsp;&nbsp;
-                    <pre>{reverbDecay}</pre>
-
+                        />
+                        <span>{reverbDecay}</span>
                     </div>
                 </div>
                 <div className={styles['control-container']}>
-                    <pre>Pre-delay</pre>
+                    <label htmlFor="preDelay">Pre-delay</label>
                     <div className={styles['control']}>
                         <input
+                            id="preDelay"
                             type="range"
                             min="0"
                             max="1"
                             step="0.1"
                             value={reverbPreDelay}
                             onChange={(e) => onReverbPreDelayChange(Number(e.target.value))}
-                        />&nbsp;&nbsp;
-                    <pre>{reverbPreDelay}</pre>
+                        />
+                        <span>{reverbPreDelay}</span>
                     </div>
                 </div>
             </div>

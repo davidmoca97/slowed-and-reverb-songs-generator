@@ -58,7 +58,7 @@ export function getCoverArtSrc(picture: TrackMetadata["picture"]): string | unde
     }
     try {
         const { data, format } = picture;
-        if (format || data.length === 0) {
+        if (!format || data.length === 0) {
             return undefined;
         }
         let base64String = "";
