@@ -13,7 +13,7 @@ export function useInterval(
             interval.current = setInterval(handlerRef.current, ms);
         }
         return () => clear();
-    }, [ms]);
+    }, [ms, autoPlay]);
 
     useEffect(() => {
         handlerRef.current = handler;

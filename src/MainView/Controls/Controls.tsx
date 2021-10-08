@@ -26,6 +26,7 @@ export const Controls: React.FC<IControlsProps> =
                     <div className={styles['control']}>
                         <input
                             id="playbackSpeed"
+                            data-testid="playbackSpeed"
                             type="range"
                             min="0.6"
                             max="1"
@@ -42,6 +43,7 @@ export const Controls: React.FC<IControlsProps> =
                     <div className={styles['control']}>
                         <input
                             id="reverb"
+                            data-testid="reverb"
                             type="range"
                             min="0"
                             max="1"
@@ -57,6 +59,7 @@ export const Controls: React.FC<IControlsProps> =
                     <div className={styles['control']}>
                         <input
                             id="decay"
+                            data-testid="decay"
                             type="range"
                             min="0.5"
                             max="10"
@@ -72,6 +75,7 @@ export const Controls: React.FC<IControlsProps> =
                     <div className={styles['control']}>
                         <input
                             id="preDelay"
+                            data-testid="preDelay"
                             type="range"
                             min="0"
                             max="1"
