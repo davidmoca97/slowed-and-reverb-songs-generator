@@ -9,7 +9,7 @@ import { UploadedFile, uploadHandler } from './helpers/uploadHandler';
 import { getTrackMetaData, TrackMetadata, DEFAULT_TRACK_METADATA } from './helpers/trackMetadata';
 import { getSongLength } from './helpers/getSongLength';
 import { downloadHandler } from './helpers/downloadHandler';
-import { useInterval } from '../hooks/useDraggableItem/useInterval';
+import { useInterval } from '../hooks/useInterval';
 import styles from './MainView.module.css';
 
 function _updateReverbDecay(reverb: Tone.Reverb, value: number) { reverb.decay = value };
