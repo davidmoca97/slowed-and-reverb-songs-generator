@@ -14,6 +14,9 @@ type GetOnSaveHandlerInput = {
     setPreparingDownload: (value: React.SetStateAction<boolean>) => void;
 }
 
+/**
+ * Returns a callback that when executed downloads the uploaded song with the selected settings.
+ */
 export const downloadHandler = ({
     bufferDuration,
     downloadURL,
@@ -35,6 +38,8 @@ export const downloadHandler = ({
             setDownloadURL(undefined);
         }
         setPreparingDownload(true);
+
+        // Create a new player and apply the current settings
         const duration = getSongLength(bufferDuration, playbackRate);
         const offlineContext = new Tone.OfflineContext(2, duration, 44100);
         Tone.setContext(offlineContext);
@@ -52,14 +57,19 @@ export const downloadHandler = ({
         player.connect(reverb);
         reverb.toMaster();
         player.start(0);
+
+        // Getting the buffer with all of the settings applied
         const buffer = await offlineContext.render(false);
         const realBuffer = buffer.get();
         if (!realBuffer) {
             console.error("Error getting the buffer of the Audio Context");
             return;
         }
+
+        // Transform the buffer to a .wav file
         const wavBuffer = audioBufferToWav(realBuffer);
         const blob = new Blob([wavBuffer], { type: "audio/wav" });
+        // Creates an URL to download the song
         const url = URL.createObjectURL(blob);
         downloadFile(url);
         setDownloadURL(url);
@@ -67,6 +77,9 @@ export const downloadHandler = ({
     }
 }
 
+/**
+ * Downloads the file that corresponds to the provided url
+ */
 export const downloadFile = (url: string): void => {
     const link = document.createElement("a");
     link.href = url;

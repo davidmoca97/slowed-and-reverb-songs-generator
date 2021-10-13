@@ -14,6 +14,10 @@ interface IPlayerProps {
     songInfo?: TrackMetadata;
 }
 
+/**
+ * Player of the loaded song.
+ * @returns 
+ */
 export const Player: React.FC<IPlayerProps> =
     ({ onPlay, onStop, currentPlayback, songInfo, isPlaying, onSongOver, onPlaybackPositionChange }) => {
 
@@ -51,7 +55,13 @@ export const Player: React.FC<IPlayerProps> =
         )
     }
 
-
+    
+/**
+ * Transforms the picture attribute from the metadata to an URI that could be used
+ * in a img 
+ * @param picture - Picture from the song metadata
+ * @returns 
+ */
 export function getCoverArtSrc(picture: TrackMetadata["picture"]): string | undefined {
     if (!picture) {
         return undefined;

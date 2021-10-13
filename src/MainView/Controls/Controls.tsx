@@ -1,10 +1,21 @@
 import React from 'react';
 import styles from './Controls.module.css';
-
 export interface IControlsProps {
+    /**
+     * Rate at which the song is being played back
+     */
     playbackRate: number;
+    /**
+     * How much of the effect will pass through to the output
+     */
     reverbWet: number;
+    /**
+     * Duration of the reverb
+     */
     reverbDecay: number;
+    /**
+     * The amount of time before the reverb is fully ramped in.
+     */
     reverbPreDelay: number;
     onPlayBackRateChange: (value: number) => void;
     onReverbWetChange: (value: number) => void;
@@ -12,6 +23,11 @@ export interface IControlsProps {
     onReverbPreDelayChange: (value: number) => void;
 }
 
+/**
+ * Controls or settings that will be applied to the song
+ * @param props
+ * @returns 
+ */
 export const Controls: React.FC<IControlsProps> =
     ({
         onPlayBackRateChange, onReverbWetChange, onReverbDecayChange, onReverbPreDelayChange,

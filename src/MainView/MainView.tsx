@@ -3,7 +3,7 @@ import debounce from 'lodash.debounce';
 import * as Tone from "tone";
 
 import { Player } from './Player/Player';
-import { Controls } from './Controls/Controls';
+import { Controls, IControlsProps } from './Controls/Controls';
 import { Button } from './Button/Button';
 import { UploadedFile, uploadHandler } from './helpers/uploadHandler';
 import { getTrackMetaData, TrackMetadata, DEFAULT_TRACK_METADATA } from './helpers/trackMetadata';
@@ -12,18 +12,25 @@ import { downloadHandler } from './helpers/downloadHandler';
 import { useInterval } from '../hooks/useInterval';
 import styles from './MainView.module.css';
 
-function _updateReverbDecay(reverb: Tone.Reverb, value: number) { reverb.decay = value };
-function _updateReverbPreDelay(reverb: Tone.Reverb, value: number) { reverb.preDelay = value };
-const updateReverbDecay = debounce(_updateReverbDecay, 500);
-const updateReverbPreDelay = debounce(_updateReverbPreDelay, 500);
+function updateReverbDecayNoDebounce(reverb: Tone.Reverb, value: number) { reverb.decay = value };
+function updateReverbPreDelayNoDebounce(reverb: Tone.Reverb, value: number) { reverb.preDelay = value };
+const updateReverbDecay = debounce(updateReverbDecayNoDebounce, 500);
+const updateReverbPreDelay = debounce(updateReverbPreDelayNoDebounce, 500);
 
-const defaultValues = {
-    playBackRate: 0.8,
+/**
+ * These values are used once a song is loaded
+ */
+const defaultValues: Pick<IControlsProps, 'playbackRate' | 'reverbWet' | 'reverbDecay' | 'reverbPreDelay'> = {
+    playbackRate: 0.8,
     reverbWet: 0.6,
     reverbDecay: 6,
     reverbPreDelay: 0.1
 };
 
+/**
+ * Main component of the application.
+ * It puts together all the pieces to make the app work.
+ */
 export const MainView: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [songInfo, setSongInfo] = useState<TrackMetadata>(DEFAULT_TRACK_METADATA);
@@ -34,10 +41,10 @@ export const MainView: React.FC = () => {
     const [uploadedFile, setUploadedFile] = useState<UploadedFile | undefined>();
 
     // Controls
-    const [playbackRate, setPlaybackRate] = useState<number>(defaultValues.playBackRate);
-    const [reverbWet, setReverbWet] = useState<number>(defaultValues.reverbWet);
-    const [reverbDecay, setReverbDecay] = useState<number>(defaultValues.reverbDecay);
-    const [reverbPreDelay, setReverbPreDelay] = useState<number>(defaultValues.reverbPreDelay);
+    const [playbackRate, setPlaybackRate] = useState(defaultValues.playbackRate);
+    const [reverbWet, setReverbWet] = useState(defaultValues.reverbWet);
+    const [reverbDecay, setReverbDecay] = useState(defaultValues.reverbDecay);
+    const [reverbPreDelay, setReverbPreDelay] = useState(defaultValues.reverbPreDelay);
 
     const { clear: clearIntervale, start: startInterval } = useInterval(() => {
         setCurrentPlayback((playback) => playback + 1)
@@ -50,7 +57,7 @@ export const MainView: React.FC = () => {
         const p1 = reverb.generate();
         const p2 = player.load(trackUrl);
         await Promise.all([p1, p2]);
-        player.playbackRate = defaultValues.playBackRate;
+        player.playbackRate = defaultValues.playbackRate;
         reverb.wet.value = defaultValues.reverbWet;
         reverb.decay = defaultValues.reverbDecay;
         reverb.toDestination();

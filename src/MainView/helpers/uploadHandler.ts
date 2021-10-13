@@ -9,6 +9,9 @@ export type OnFileDroppedHandlerInput = {
     initializePlayer: (trackURL: string, file: File) => Promise<void>; 
 }
 
+/**
+ * Returns a closure that must be used in the onChange event of the input that upload files.
+ */
 export const uploadHandler = ({
     setUploadedFile,
     setLoading,

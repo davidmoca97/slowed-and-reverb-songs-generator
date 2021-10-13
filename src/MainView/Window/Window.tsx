@@ -7,6 +7,11 @@ interface IWindowProps {
     footer?: React.ReactNode;
 }
 
+/**
+ * Wrapper component that has the appearance of an old WS' window 
+ * @param props 
+ * @returns 
+ */
 export const Window: React.FC<IWindowProps> = ({ children, title, footer }) => {
     return (
         <div className={styles["windows-alert"]}>

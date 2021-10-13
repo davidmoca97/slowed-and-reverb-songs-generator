@@ -16,6 +16,10 @@ export const DEFAULT_TRACK_METADATA: TrackMetadata = {
     length: 0
 }
 
+/**
+ * Gets track info directly from a file.
+ * @param source - File
+ */
 export const getTrackMetaData = (source: File): Promise<TrackMetadata> => {
     return new Promise((resolve) => {
         jsmediatags.read(source, {

@@ -5,6 +5,12 @@ type CoverArtProps = {
     src?: string;
 }
 
+/**
+ * Picture to be displayed in the player.
+ * If no source is provided a default div will take its place
+ * @param param0 
+ * @returns 
+ */
 export const CoverArt: React.FC<CoverArtProps> = ({ src }) => {
     if (!src) {
         return (
